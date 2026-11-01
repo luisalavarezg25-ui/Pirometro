@@ -1,0 +1,611 @@
+{
+ "version": "1.4",
+ "estado": "validada",
+ "nota": "Temperaturas validadas contrastando 4 tablas (Chapman, Stirling 1905, US Navy, MachineMFG) y el punto de Draper (525 °C); se usa la mediana con ±75 °C (incandescencia) y ±20 °C (revenido). Los RGB son apariencias típicas en foto (referencia para clasificar por tono), no medidas físicas: por encima de ~1100 °C el 'amarillo/blanco' se debe a la saturación del sensor. Descartar píxeles saturados y oscuros. Los colores de revenido son reflejados y dependen de la luz ambiente. La tabla completa con la curva física de Planck está en /mnt/project-files/tabla-color-temperatura/tabla_color_temperatura_acero.json. v1.1: consenso por mediana de 4 linajes independientes, incertidumbre por banda, ajuste por iluminación y regla de fusión de estimadores.",
+ "fuentes": [
+  {
+   "ref": "Chapman, Workshop Technology (vía Wikipedia 'Red heat')",
+   "url": "https://en.wikipedia.org/wiki/Red_heat"
+  },
+  {
+   "ref": "Stirling Consolidated Boiler Co., 1905 (vía Wikipedia 'Red heat')",
+   "url": "https://en.wikipedia.org/wiki/Red_heat"
+  },
+  {
+   "ref": "US Navy, Aviation Structural Mechanic, Tabla 6-1 colores del acero",
+   "url": "https://navyaviation.tpub.com/14315/Table-6-1-Color-Chart-For-Steel-At-Various-Temperatures-250.html"
+  },
+  {
+   "ref": "US Navy, Aviation Structural Mechanic, Tabla 6-2 colores de revenido",
+   "url": "https://navyaviation.tpub.com/14315/Table-6-2-Color-Chart-For-Various-Tempering-Temperatures-Of-Carbon-Steel-251.html"
+  },
+  {
+   "ref": "MachineMFG, Steel temperature color chart",
+   "url": "https://machinemfg.com/temperature-and-color-chart"
+  },
+  {
+   "ref": "Draper point (525 °C)",
+   "url": "https://en.wikipedia.org/wiki/Draper_point"
+  },
+  {
+   "ref": "Tribble 2014, Application of Consumer Color Cameras as Three-Color Pyrometers (NMT)",
+   "url": "https://nmt.edu/academics/mecheng/faculty/mhargather/docs/Tribble2014.pdf"
+  },
+  {
+   "ref": "Maun 2006, Thin-Filament Pyrometry with a Digital Still Camera (U. Maryland)",
+   "url": "https://drum.lib.umd.edu/items/49bcd787-0fff-46db-bb95-60e45dc408e9/full"
+  },
+  {
+   "ref": "Optris, tabla de emisividades",
+   "url": "https://optris.com/us/technology/emissivity-table/"
+  },
+  {
+   "ref": "Wyman, Sloan, Shirley 2013, aproximación analítica de las funciones CIE 1931 (cálculo propio de Planck → sRGB)",
+   "url": "https://jcgt.org/published/0002/02/01/"
+  },
+  {
+   "ref": "Pouillet 1836, vía Scientific American Reference Book",
+   "url": "https://chestofbooks.com/crafts/scientific-american/Scientific-American-Reference-Book/Heat-Its-Mechanical-Equivalent.html"
+  },
+  {
+   "ref": "Stirling Co. 1905, A Book of Steam for Engineers (copia PDF)",
+   "url": "https://www.build-a-gasifier.com/PDF/Temperature%20ByAppearance.pdf"
+  },
+  {
+   "ref": "US Navy, Machinery Repairman, tabla 15-1",
+   "url": "https://enginemechanics.tpub.com/14345/Table-15-2-Oxide-Colors-For-Steel-Of-Various-Temperatures-372.html"
+  },
+  {
+   "ref": "Dempsey, Forge and Furnace Heat Colors (anvilfire.com), precisión ±110 °C",
+   "url": "https://anvilfire.com/21st-century-blacksmithing/colors-of-the-forge"
+  },
+  {
+   "ref": "Hearth.com, umbrales de visibilidad según luz",
+   "url": "https://www.hearth.com/talk/resources/know-temperature-when-metal-glows-red.24/updates"
+  },
+  {
+   "ref": "Jaffer (MIT CSAIL), colores de cuerpo negro calculados (verificación del cálculo Planck)",
+   "url": "https://people.csail.mit.edu/jaffer/Color/Heat"
+  },
+  {
+   "ref": "Wikipedia Talk:Red heat, análisis de discrepancias entre 7 fuentes",
+   "url": "https://wiki.riteme.site/wiki/Talk:Red_heat"
+  },
+  {
+   "ref": "Cambridge DoITPoMS/eng-atoms, colores de revenido",
+   "url": "https://www.eng-atoms.msm.cam.ac.uk/node/68"
+  }
+ ],
+ "entradas": [
+  {
+   "color": "Sin brillo visible",
+   "tipo": "incandescencia",
+   "temperatura_c": 450,
+   "t_min_c": null,
+   "t_max_c": 480,
+   "incertidumbre_c": 50,
+   "rgb": [
+    40,
+    30,
+    30
+   ]
+  },
+  {
+   "color": "Rojo negruzco / apenas visible",
+   "tipo": "incandescencia",
+   "temperatura_c": 518,
+   "t_min_c": 480,
+   "t_max_c": 575,
+   "incertidumbre_c": 50,
+   "rgb": [
+    80,
+    10,
+    5
+   ]
+  },
+  {
+   "color": "Rojo oscuro / rojo sangre",
+   "tipo": "incandescencia",
+   "temperatura_c": 632,
+   "t_min_c": 575,
+   "t_max_c": 681,
+   "incertidumbre_c": 67,
+   "rgb": [
+    130,
+    15,
+    5
+   ]
+  },
+  {
+   "color": "Rojo cereza oscuro",
+   "tipo": "incandescencia",
+   "temperatura_c": 730,
+   "t_min_c": 681,
+   "t_max_c": 767,
+   "incertidumbre_c": 62,
+   "rgb": [
+    170,
+    25,
+    10
+   ]
+  },
+  {
+   "color": "Rojo cereza",
+   "tipo": "incandescencia",
+   "temperatura_c": 804,
+   "t_min_c": 767,
+   "t_max_c": 844,
+   "incertidumbre_c": 77,
+   "rgb": [
+    205,
+    40,
+    15
+   ]
+  },
+  {
+   "color": "Rojo cereza claro / rojo brillante",
+   "tipo": "incandescencia",
+   "temperatura_c": 884,
+   "t_min_c": 844,
+   "t_max_c": 936,
+   "incertidumbre_c": 92,
+   "rgb": [
+    235,
+    70,
+    20
+   ]
+  },
+  {
+   "color": "Naranja / salmón",
+   "tipo": "incandescencia",
+   "temperatura_c": 989,
+   "t_min_c": 936,
+   "t_max_c": 1038,
+   "incertidumbre_c": 110,
+   "rgb": [
+    255,
+    110,
+    30
+   ]
+  },
+  {
+   "color": "Amarillo anaranjado",
+   "tipo": "incandescencia",
+   "temperatura_c": 1086,
+   "t_min_c": 1038,
+   "t_max_c": 1137,
+   "incertidumbre_c": 110,
+   "rgb": [
+    255,
+    160,
+    50
+   ]
+  },
+  {
+   "color": "Amarillo / amarillo claro",
+   "tipo": "incandescencia",
+   "temperatura_c": 1188,
+   "t_min_c": 1137,
+   "t_max_c": 1241,
+   "incertidumbre_c": 96,
+   "rgb": [
+    255,
+    210,
+    90
+   ]
+  },
+  {
+   "color": "Amarillo blanquecino",
+   "tipo": "incandescencia",
+   "temperatura_c": 1294,
+   "t_min_c": 1241,
+   "t_max_c": 1307,
+   "incertidumbre_c": 60,
+   "rgb": [
+    255,
+    240,
+    170
+   ]
+  },
+  {
+   "color": "Blanco / blanco deslumbrante",
+   "tipo": "incandescencia",
+   "temperatura_c": 1320,
+   "t_min_c": 1307,
+   "t_max_c": null,
+   "incertidumbre_c": 56,
+   "rgb": [
+    255,
+    252,
+    235
+   ]
+  },
+  {
+   "color": "Amarillo pálido",
+   "tipo": "revenido",
+   "temperatura_c": 210,
+   "t_min_c": 200,
+   "t_max_c": 220,
+   "incertidumbre_c": 20,
+   "rgb": [
+    245,
+    230,
+    170
+   ]
+  },
+  {
+   "color": "Pajizo",
+   "tipo": "revenido",
+   "temperatura_c": 228,
+   "t_min_c": 220,
+   "t_max_c": 235,
+   "incertidumbre_c": 20,
+   "rgb": [
+    225,
+    195,
+    120
+   ]
+  },
+  {
+   "color": "Amarillo dorado / pajizo oscuro",
+   "tipo": "revenido",
+   "temperatura_c": 242,
+   "t_min_c": 235,
+   "t_max_c": 250,
+   "incertidumbre_c": 20,
+   "rgb": [
+    200,
+    155,
+    70
+   ]
+  },
+  {
+   "color": "Marrón / bronce",
+   "tipo": "revenido",
+   "temperatura_c": 256,
+   "t_min_c": 250,
+   "t_max_c": 262,
+   "incertidumbre_c": 20,
+   "rgb": [
+    150,
+    95,
+    45
+   ]
+  },
+  {
+   "color": "Marrón con manchas púrpura",
+   "tipo": "revenido",
+   "temperatura_c": 267,
+   "t_min_c": 262,
+   "t_max_c": 272,
+   "incertidumbre_c": 20,
+   "rgb": [
+    130,
+    70,
+    80
+   ]
+  },
+  {
+   "color": "Púrpura",
+   "tipo": "revenido",
+   "temperatura_c": 278,
+   "t_min_c": 272,
+   "t_max_c": 285,
+   "incertidumbre_c": 20,
+   "rgb": [
+    110,
+    50,
+    120
+   ]
+  },
+  {
+   "color": "Azul oscuro",
+   "tipo": "revenido",
+   "temperatura_c": 290,
+   "t_min_c": 285,
+   "t_max_c": 295,
+   "incertidumbre_c": 20,
+   "rgb": [
+    40,
+    50,
+    140
+   ]
+  },
+  {
+   "color": "Azul brillante",
+   "tipo": "revenido",
+   "temperatura_c": 305,
+   "t_min_c": 295,
+   "t_max_c": 315,
+   "incertidumbre_c": 20,
+   "rgb": [
+    50,
+    90,
+    180
+   ]
+  },
+  {
+   "color": "Azul pálido / gris azulado",
+   "tipo": "revenido",
+   "temperatura_c": 342,
+   "t_min_c": 315,
+   "t_max_c": 370,
+   "incertidumbre_c": 20,
+   "rgb": [
+    120,
+    150,
+    180
+   ]
+  }
+ ],
+ "ajuste_iluminacion": {
+  "descripcion": "Corrección a sumar a la temperatura estimada por apariencia/tono según la luz ambiente. Con más luz el brillo propio se ve menos y el acero está más caliente de lo que parece. Referencia: taller en penumbra. Basado en el umbral de visibilidad: 399 °C en oscuridad y 482 °C con luz diurna (US Navy, Machinery Repairman); 400/474/525/581 °C en oscuridad/crepúsculo/día/sol (Hearth.com). El efecto se reduce a la mitad por encima de ~800 °C.",
+  "valores_C": {
+   "oscuridad": -50,
+   "penumbra": 0,
+   "interior_iluminado": 50,
+   "luz_diurna": 75,
+   "sol_directo": 125
+  },
+  "factor_por_encima_800C": 0.5
+ },
+ "solucion_comun": {
+  "descripcion": "Fusión de tres estimadores independientes, ponderados por la inversa de su varianza: T = Σ(T_i/σ_i²)/Σ(1/σ_i²).",
+  "estimadores": [
+   {
+    "id": "tono_banda",
+    "metodo": "Banda de 'incandescencia' más cercana por H y V de píxeles no saturados + fracción saturada, con ajuste_iluminacion",
+    "sigma_C": 75
+   },
+   {
+    "id": "relacion_G_R",
+    "metodo": "JPEG: invertir srgb_lineal_G_R sobre píxeles con R<0,9 lineal y T>650 °C; RAW: invertir camera_model_G_R calibrado. Excluir si no hay píxeles válidos.",
+    "sigma_C_sin_calibrar": 150,
+    "sigma_C_calibrado": 40
+   },
+   {
+    "id": "brillo_absoluto",
+    "metodo": "Solo con exposición/ISO bloqueados y calibrados: invertir camera_model_R_rel_1000C; muy sensible a emisividad",
+    "sigma_C": 60,
+    "solo_version_movil": true
+   }
+  ],
+  "reglas": [
+   "Si >30 % de la zona está saturada, subir el peso de tono_banda y avisar 'baja la exposición'.",
+   "Si las estimaciones difieren más de 2σ, mostrar rango amplio y aviso de baja confianza.",
+   "Pedir o detectar la luz ambiente (brillo medio fuera de la pieza) para elegir ajuste_iluminacion."
+  ]
+ },
+ "curva_srgb_lineal_G_R": [
+  {
+   "temperatura_c": 450,
+   "G_R": 0.0
+  },
+  {
+   "temperatura_c": 475,
+   "G_R": 0.0
+  },
+  {
+   "temperatura_c": 500,
+   "G_R": 0.0
+  },
+  {
+   "temperatura_c": 525,
+   "G_R": 0.0
+  },
+  {
+   "temperatura_c": 550,
+   "G_R": 0.0
+  },
+  {
+   "temperatura_c": 575,
+   "G_R": 0.0
+  },
+  {
+   "temperatura_c": 600,
+   "G_R": 0.004047
+  },
+  {
+   "temperatura_c": 625,
+   "G_R": 0.008575
+  },
+  {
+   "temperatura_c": 650,
+   "G_R": 0.01328
+  },
+  {
+   "temperatura_c": 675,
+   "G_R": 0.01815
+  },
+  {
+   "temperatura_c": 700,
+   "G_R": 0.02317
+  },
+  {
+   "temperatura_c": 725,
+   "G_R": 0.02831
+  },
+  {
+   "temperatura_c": 750,
+   "G_R": 0.03356
+  },
+  {
+   "temperatura_c": 775,
+   "G_R": 0.03893
+  },
+  {
+   "temperatura_c": 800,
+   "G_R": 0.04438
+  },
+  {
+   "temperatura_c": 825,
+   "G_R": 0.04992
+  },
+  {
+   "temperatura_c": 850,
+   "G_R": 0.05553
+  },
+  {
+   "temperatura_c": 875,
+   "G_R": 0.06121
+  },
+  {
+   "temperatura_c": 900,
+   "G_R": 0.06695
+  },
+  {
+   "temperatura_c": 925,
+   "G_R": 0.07274
+  },
+  {
+   "temperatura_c": 950,
+   "G_R": 0.07858
+  },
+  {
+   "temperatura_c": 975,
+   "G_R": 0.08447
+  },
+  {
+   "temperatura_c": 1000,
+   "G_R": 0.09039
+  },
+  {
+   "temperatura_c": 1025,
+   "G_R": 0.09635
+  },
+  {
+   "temperatura_c": 1050,
+   "G_R": 0.1023
+  },
+  {
+   "temperatura_c": 1075,
+   "G_R": 0.1083
+  },
+  {
+   "temperatura_c": 1100,
+   "G_R": 0.1144
+  },
+  {
+   "temperatura_c": 1125,
+   "G_R": 0.1204
+  },
+  {
+   "temperatura_c": 1150,
+   "G_R": 0.1265
+  },
+  {
+   "temperatura_c": 1175,
+   "G_R": 0.1326
+  },
+  {
+   "temperatura_c": 1200,
+   "G_R": 0.1387
+  },
+  {
+   "temperatura_c": 1225,
+   "G_R": 0.1448
+  },
+  {
+   "temperatura_c": 1250,
+   "G_R": 0.1509
+  },
+  {
+   "temperatura_c": 1275,
+   "G_R": 0.157
+  },
+  {
+   "temperatura_c": 1300,
+   "G_R": 0.1631
+  },
+  {
+   "temperatura_c": 1325,
+   "G_R": 0.1692
+  },
+  {
+   "temperatura_c": 1350,
+   "G_R": 0.1753
+  },
+  {
+   "temperatura_c": 1375,
+   "G_R": 0.1815
+  },
+  {
+   "temperatura_c": 1400,
+   "G_R": 0.1876
+  },
+  {
+   "temperatura_c": 1425,
+   "G_R": 0.1937
+  },
+  {
+   "temperatura_c": 1450,
+   "G_R": 0.1997
+  },
+  {
+   "temperatura_c": 1475,
+   "G_R": 0.2058
+  },
+  {
+   "temperatura_c": 1500,
+   "G_R": 0.2119
+  },
+  {
+   "temperatura_c": 1525,
+   "G_R": 0.218
+  },
+  {
+   "temperatura_c": 1550,
+   "G_R": 0.224
+  }
+ ],
+ "calibracion_foto_v1": {
+  "descripcion": "Curva H→T empírica para fotos JPEG con exposición automática, ajustada con las fotos reales de Jaime (correspondencia confirmada). Interpolar linealmente; aplicar solo si S mediana ≥ 0,40. Con S < 0,40 la salida es '< ~750 °C, sin brillo apreciable' (la foto a 700 °C con fuego detrás tiene S≈0,22, igual que el acero frío). H en grados, envuelto a [-180,180].",
+  "puntos": [
+   {
+    "H": -5,
+    "T_c": 760,
+    "nota": "extrapolado; solo con S≥0,40"
+   },
+   {
+    "H": 1,
+    "T_c": 800,
+    "nota": "foto 5, medido"
+   },
+   {
+    "H": 8,
+    "T_c": 850,
+    "nota": "foto 6, medido (100 % quemada)"
+   },
+   {
+    "H": 23,
+    "T_c": 900,
+    "nota": "foto 7, medido"
+   },
+   {
+    "H": 40,
+    "T_c": 985,
+    "nota": "extrapolado, 5 °C/° (entre la pendiente medida 3,3 y la de tabla 8)"
+   },
+   {
+    "H": 55,
+    "T_c": 1060,
+    "nota": "extrapolado"
+   }
+  ],
+  "incertidumbre_c": {
+   "medido": 60,
+   "extrapolado": 125
+  },
+  "advertencias": [
+   "Solo 3 puntos con S≥0,40 de un único teléfono y escena: validar con más fotos, sobre todo 950–1200 °C y 700–780 °C con fondo oscuro.",
+   "En fotos con exposición automática el tono sube con el brillo: a 900 °C la foto da H≈23, mientras la apariencia típica de tabla da H≈14. Por eso esta curva sustituye a la interpolación sobre apariencia_tipica para fotos de móvil.",
+   "Si >30 % de la barra está quemada, ampliar la incertidumbre en 50 °C."
+  ],
+  "punto_baja_saturacion": {
+   "S_mediana": 0.22,
+   "H": -6,
+   "T_c": 700,
+   "nota": "foto 4; indistinguible del acero frío por color con fuego de fondo"
+  }
+ }
+}
