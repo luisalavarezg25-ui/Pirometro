@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111416">
+<title>Pirómetro de Color</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icono.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icono-192.png">
+<style>
+/* Visor de cámara a pantalla completa con retícula central; lectura y controles en un panel inferior. Diseño oscuro único, pensado para taller. */
+:root {
+  --bg: #111416; --panel: rgba(20,24,27,.92); --fg: #eef1f2; --muted: #9aa4ab; --line: #2f363b;
+  --accent: #f2763a; --ok: #5cbf86; --warn: #e3a13b; --bad: #ef6b60;
+  --f-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-num: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 15px/1.4 var(--f-ui); overflow: hidden; }
+.visor { position: fixed; inset: 0; display: grid; place-items: center; background: #000; }
+video, #foto { width: 100%; height: 100%; object-fit: cover; }
+#foto { display: none; position: absolute; inset: 0; }
+.reticula { position: absolute; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.6), 0 0 0 9999px rgba(0,0,0,.18); border-radius: 6px; pointer-events: none; }
+.reticula::after { content: ""; position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; border: 2px solid #fff; }
+.arriba { position: fixed; top: 0; left: 0; right: 0; padding: calc(env(safe-area-inset-top,0px) + 10px) max(14px, env(safe-area-inset-right,0px)) 10px max(14px, env(safe-area-inset-left,0px)); display: flex; justify-content: space-between; align-items: center; gap: 8px; background: linear-gradient(rgba(0,0,0,.6), transparent); }
+.marca { font-weight: 700; letter-spacing: .02em; }
+.marca b { color: var(--accent); }
+.estado { font: 12px var(--f-num); padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); background: rgba(0,0,0,.4); color: var(--muted); }
+.estado.ok { color: var(--ok); border-color: var(--ok); }
+.estado.warn { color: var(--warn); border-color: var(--warn); }
+.panel { position: fixed; left: 0; right: 0; bottom: 0; background: var(--panel); backdrop-filter: blur(8px); border-top: 1px solid var(--line); padding: 12px max(14px, env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 12px) max(14px, env(safe-area-inset-left,0px)); display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow-y: auto; }
+.lectura { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.temp { font: 700 52px/1 var(--f-num); font-variant-numeric: tabular-nums; }
+.temp small { font-size: 18px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+.nombre { font-weight: 600; }
+.conf { font-size: 12px; font-weight: 600; }
+.conf.alta { color: var(--ok); } .conf.media { color: var(--warn); } .conf.baja { color: var(--bad); }
+.sw { width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--line); flex: none; }
+.aviso { font-size: 13px; color: var(--muted); margin: 0; min-height: 1.4em; }
+.fila { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+button, .btn { font: 600 14px var(--f-ui); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: #1f2427; color: var(--fg); cursor: pointer; min-height: 44px; position: relative; }
+button.primario { background: var(--accent); border-color: var(--accent); color: #1a0f08; }
+button[aria-pressed="true"] { border-color: var(--ok); color: var(--ok); }
+button:disabled { opacity: .45; }
+button:focus-visible, .btn:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+label.rango { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--muted); flex: 1 1 140px; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+input[type=number] { font: 15px var(--f-num); width: 7.5em; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--line); background: #0c0f10; color: var(--fg); min-height: 44px; }
+details { border-top: 1px solid var(--line); padding-top: 8px; }
+summary { cursor: pointer; font-weight: 600; font-size: 14px; min-height: 32px; }
+.lista { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.lista li { font: 12px var(--f-num); border: 1px solid var(--line); border-radius: 999px; padding: 2px 4px 2px 10px; display: inline-flex; align-items: center; }
+.lista button { min-height: 28px; padding: 0 8px; border: 0; background: none; color: var(--muted); }
+.nota { font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 6px 0 0; font-size: 12px; }
+dt { color: var(--muted); } dd { margin: 0; font-family: var(--f-num); overflow-wrap: anywhere; }
+.inicio { position: fixed; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; background: var(--bg); }
+.inicio div { max-width: 26rem; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+.inicio h1 { margin: 0; font-size: 28px; } .inicio h1 b { color: var(--accent); }
+.inicio p { margin: 0; color: var(--muted); }
+.redondo { min-height: 36px; width: 36px; padding: 0; border-radius: 50%; }
+.ayuda { position: fixed; inset: 0; background: var(--bg); overflow-y: auto; padding: calc(env(safe-area-inset-top,0px) + 20px) max(20px, env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 20px) max(20px, env(safe-area-inset-left,0px)); z-index: 5; }
+.ayuda > div { max-width: 34rem; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.ayuda h2 { margin: 0; font-size: 22px; }
+.ayuda ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; color: var(--muted); }
+.ayuda b { color: var(--fg); }
+.version { font: 11px var(--f-num); color: var(--muted); }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<div class="visor" id="visor">
+  <video id="video" playsinline muted autoplay></video>
+  <canvas id="foto"></canvas>
+  <div class="reticula" id="reticula"></div>
+</div>
+
+<div class="arriba">
+  <span class="marca">Pirómetro <b>de Color</b></span>
+  <span class="fila"><span id="estadoCam" class="estado">Cámara apagada</span><button id="btnAyuda" type="button" class="redondo" aria-label="Cómo medir">?</button></span>
+</div>
+
+<div class="panel" id="panel">
+  <div class="lectura" aria-live="polite">
+    <div>
+      <div class="temp" id="temp">—<small>°C</small></div>
+      <div class="nombre" id="nombre">Apunta la retícula a la pieza</div>
+      <div class="conf" id="conf"></div>
+    </div>
+    <div class="sw" id="sw"></div>
+  </div>
+  <p class="aviso" id="aviso"></p>
+  <div class="fila">
+    <button id="btnPausa" type="button" class="primario">Congelar lectura</button>
+    <button id="btnBloqueo" type="button" aria-pressed="false">Fijar exposición y color</button>
+    <button id="btnAutoExp" type="button">Ajustar exposición</button>
+  </div>
+  <div class="fila" id="filaExp" hidden>
+    <label class="rango">Exposición <input id="exp" type="range"></label>
+    <label class="rango" id="lblTempColor">Balance de blancos (K) <input id="wb" type="range"></label>
+  </div>
+  <details>
+    <summary>Calibrar este teléfono</summary>
+    <p class="nota">Apunta a una pieza de temperatura conocida (pirómetro, termopar o proceso), congela la lectura y añade la temperatura real. Usa 2–3 piezas a distintas temperaturas y siempre con la exposición y el color fijados. Se guarda en este teléfono.</p>
+    <div class="fila" style="margin-top:8px">
+      <label for="tReal" class="vh">Temperatura real en °C</label>
+      <input id="tReal" type="number" inputmode="numeric" min="300" max="1600" step="5" placeholder="°C reales">
+      <button id="btnCal" type="button">Añadir referencia</button>
+      <button id="btnCalBorrar" type="button" hidden>Borrar</button>
+    </div>
+    <ul class="lista" id="listaCal"></ul>
+  </details>
+  <details>
+    <summary>Capturas de calibración <span id="numCapturas" class="nota"></span></summary>
+    <p class="nota">Guarda la foto de la retícula con los ajustes de cámara y la temperatura real medida, para ir creando tu propio conjunto de fotos. Protocolo: cada 25 °C entre 550 y 1200 °C, fondo oscuro, exposición y color fijados.</p>
+    <div class="fila" style="margin-top:8px">
+      <label for="tCaptura" class="vh">Temperatura real de la captura en °C</label>
+      <input id="tCaptura" type="number" inputmode="numeric" min="0" max="1600" step="5" placeholder="°C reales">
+      <button id="btnCaptura" type="button">Guardar captura</button>
+    </div>
+    <div class="fila" style="margin-top:8px">
+      <button id="btnExportar" type="button" disabled>Exportar capturas</button>
+      <button id="btnBorrarCapturas" type="button" disabled>Borrar todas</button>
+    </div>
+    <p class="nota" id="msgCaptura"></p>
+  </details>
+  <details>
+    <summary>Más opciones</summary>
+    <div class="fila" style="margin-top:8px">
+      <label class="btn" for="archivo">Analizar una foto<input id="archivo" type="file" accept="image/*"></label>
+      <label class="rango">Tamaño de la retícula <input id="tamRet" type="range" min="4" max="40" value="12"></label>
+    </div>
+    <dl>
+      <dt>Color medido</dt><dd id="dRgb">—</dd>
+      <dt>Tono / sat. / brillo</dt><dd id="dHsv">—</dd>
+      <dt>Quemado</dt><dd id="dSat">—</dd>
+      <dt>Cámara</dt><dd id="dCam">—</dd>
+    </dl>
+  </details>
+</div>
+
+<div class="inicio" id="inicio">
+  <div>
+    <h1>Pirómetro <b>de Color</b></h1>
+    <p>Estima la temperatura del acero incandescente por su color, en tiempo real con la cámara.</p>
+    <button id="btnIniciar" type="button" class="primario">Abrir la cámara</button>
+    <label class="btn" for="archivo3">Hacer una foto con la cámara<input id="archivo3" type="file" accept="image/*" capture="environment"></label>
+    <label class="btn" for="archivo2">Elegir una foto de la galería<input id="archivo2" type="file" accept="image/*"></label>
+    <p class="nota" id="msgInicio"></p>
+    <span class="version">Versión 1.0.2 · Android (Chrome)</span>
+  </div>
+</div>
+
+<div class="ayuda" id="ayuda" hidden>
+  <div>
+    <h2>Cómo medir</h2>
+    <ol>
+      <li><b>Fondo oscuro y sin fuego detrás.</b> El brillo de la fragua tapa el de la pieza: por debajo de unos 750 °C la cámara no distingue acero caliente de frío si hay mucha luz.</li>
+      <li><b>Apunta la retícula a la superficie limpia</b>, sin cascarilla ni reflejos. Puedes cambiar su tamaño en «Más opciones».</li>
+      <li><b>Pulsa «Fijar exposición y color»</b> y luego <b>«Ajustar exposición»</b> hasta que la pieza no salga quemada (blanca).</li>
+      <li><b>Lee la temperatura</b> con su margen (±). «Congelar lectura» la detiene para anotarla.</li>
+      <li><b>Calibra tu teléfono</b> con 2–3 piezas a temperatura conocida (pirómetro o termopar). Mejora mucho la precisión.</li>
+    </ol>
+    <p class="nota">Sin calibrar, la app usa una curva obtenida con fotos reales a 800, 850 y 900 °C (margen ±60 °C en ese tramo y ±125 °C fuera de él). Es una ayuda de taller y no sustituye a un pirómetro.</p>
+    <button id="btnCerrarAyuda" type="button" class="primario">Entendido</button>
+    <span class="version">Pirómetro de Color 1.0.2 · tabla de colores v1.4</span>
+  </div>
+</div>
+
+<script src="motor-color.js"></script>
+<script src="tabla-color-temperatura.js"></script>
+<script src="app.js"></script>
+<script src="capturas.js"></script>
+</body>
+</html>
